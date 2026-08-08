@@ -1,5 +1,4 @@
 [app]
-
 title = Matematik Macerasi
 package.name = matematikmacerasi
 package.domain = org.matematikmacerasi
