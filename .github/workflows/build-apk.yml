@@ -39,7 +39,6 @@ jobs:
             zlib1g-dev \
             libncurses5-dev \
             libncursesw5-dev \
-            libtinfo6 \
             cmake \
             libffi-dev \
             libssl-dev
@@ -50,35 +49,33 @@ jobs:
           pip install buildozer
           pip install cython==0.29.34
 
-      - name: Prepare Buildozer Android SDK
-        run: |
-          rm -rf ~/.buildozer/android/platform/android-sdk
-
-          mkdir -p ~/.buildozer/android/platform/android-sdk
-
-      - name: Initialize Buildozer
+      - name: Initialize Android SDK
         run: |
           buildozer android debug || true
+
+      - name: Find Android SDK tools
+        run: |
+          echo "Android SDK contents:"
+          find "$HOME/.buildozer/android/platform/android-sdk" -name sdkmanager -type f -print
 
       - name: Accept Android licenses
         run: |
           SDK="$HOME/.buildozer/android/platform/android-sdk"
+          SDKMANAGER=$(find "$SDK" -name sdkmanager -type f | head -n 1)
 
-          if [ -f "$ANDROID_HOME/licenses/android-sdk-license" ]; then
-            mkdir -p "$SDK/licenses"
-            cp -r "$ANDROID_HOME/licenses/"* "$SDK/licenses/"
-          fi
+          echo "Using sdkmanager:"
+          echo "$SDKMANAGER"
 
-          yes | "$SDK/tools/bin/sdkmanager" --licenses || true
+          yes | "$SDKMANAGER" --licenses || true
 
-      - name: Install required Android Build Tools
+      - name: Install Android Build Tools
         run: |
           SDK="$HOME/.buildozer/android/platform/android-sdk"
+          SDKMANAGER=$(find "$SDK" -name sdkmanager -type f | head -n 1)
 
-          "$SDK/tools/bin/sdkmanager" \
-            "platform-tools" \
-            "platforms;android-35" \
-            "build-tools;37.0.0"
+          "$SDKMANAGER" "platform-tools"
+          "$SDKMANAGER" "platforms;android-35"
+          "$SDKMANAGER" "build-tools;37.0.0"
 
       - name: Build APK
         run: |
