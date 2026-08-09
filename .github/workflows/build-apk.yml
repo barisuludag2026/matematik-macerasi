@@ -28,11 +28,15 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android packages
+      - name: Accept Android licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
+      - name: Install Android SDK packages
         run: |
           sdkmanager "platform-tools"
           sdkmanager "platforms;android-35"
-          sdkmanager "build-tools;35.0.0"
+          sdkmanager "build-tools;37.0.0"
 
       - name: Install system dependencies
         run: |
@@ -59,9 +63,21 @@ jobs:
           pip install buildozer
           pip install cython==0.29.34
 
-      - name: Build APK
+      - name: Configure Android SDK for Buildozer
+        run: |
+          echo "ANDROIDSDK=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+
+      - name: Clean Buildozer cache
         run: |
           rm -rf ~/.buildozer
+
+      - name: Build APK
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools"
+          sdkmanager "platforms;android-35"
+          sdkmanager "build-tools;37.0.0"
           buildozer android debug
 
       - name: Upload APK
