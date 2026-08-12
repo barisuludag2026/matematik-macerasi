@@ -5,7 +5,7 @@ package.domain = org.matematikmacerasi
 source.dir = .
 source.include_exts = py,png,jpg,jpeg,kv,atlas,txt
 version = 1.0
-requirements = python3,kivy
+requirements = python3==3.12.13,kivy
 orientation = portrait
 fullscreen = 0
 
